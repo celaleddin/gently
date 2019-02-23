@@ -1,21 +1,19 @@
-(defn validate-tf [tf-data]
-  (unless (and (in :numerator tf-data)
-               (in :denominator tf-data))
-    (raise (ValueError "Both :numerator and :denominator must be given."))))
-
+(import [gently.utils [join-names]])
 
 (defmacro define-transfer-function [system-name &rest args]
-  (setv arg-dict (dfor (, k #* v) args [k v]))
-  (validate-tf arg-dict)
+  (if (string? (first args))
+      (setv docstring (first args)
+            args (rest args))
+      (setv docstring None))
+  (setv arg-dict (dfor (, k #* v) args [k (join-names #* v)]))
   `(do
-     (import control)
-     (require gently.math)
-     (setv ~system-name (control.tf (gently.math.coeffs ~@(get arg-dict :numerator))
-                                    (gently.math.coeffs ~@(get arg-dict :denominator))
-                                    ~(when (in :sampling-period arg-dict)
-                                       (first (get arg-dict :sampling-period)))))
-     ~(when (in :documentation arg-dict)
-        `(setattr ~system-name "**doc**" ~@(get arg-dict :documentation)))
+     (import gently.control)
+     (setv ~system-name (gently.control.TransferFunction
+                          ~(get arg-dict :numerator)
+                          ~(get arg-dict :denominator)
+                          ~(when (in :sampling-period arg-dict)
+                             (get arg-dict :sampling-period))))
+     ~(when docstring `(setattr ~system-name "**doc**" ~docstring))
      ~system-name))
 
 (defmacro define [symbol value &optional docstring]
@@ -28,4 +26,3 @@
 (defmacro documentation [symbol]
   `(getattr ~symbol "**doc**"
             (% "No documentation found for symbol '%s'" (name '~symbol))))
-

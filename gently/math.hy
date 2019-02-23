@@ -1,20 +1,13 @@
-(import [gently.utils [join-names]])
+(import re)
 
+(import [sympy [Poly Symbol]])
 
-(defmacro coeffs [&rest poly]
-  (defn symbol-in-poly? [symbol]
-    (any (map (fn [s] (try (in symbol s)
-                           (except [TypeError] False)))
-              poly)))
-  (setv unknown (if (symbol-in-poly? 's) "s"
-                    (symbol-in-poly? 'z) "z"
-                    "x"))
-  (setv unknown-symbol (gensym unknown))
-  `(do
-     (import [sympy [Poly Symbol]]
-             [gently.utils [only-number-values]])
-     (setv ~unknown-symbol (Symbol ~unknown))
-     (setv numbers-dict (only-number-values (locals)))
-     (list (map (fn [c] (int (.evalf c :subs numbers-dict)))
-                (.all_coeffs (Poly ~(join-names #* poly)
-                                   ~unknown-symbol))))))
+(defn coeffs [poly-str]
+  (defn unknown-in-poly? [unknown-str]
+    (setv pattern (+ ".*\\b" unknown-str "\\b.*"))
+    (re.match pattern poly-str))
+  (setv unknown-char (if (unknown-in-poly? "s") "s"
+                         (unknown-in-poly? "z") "z"
+                         "any-another-string"))
+  (setv unknown (Symbol unknown-char))
+  (.all_coeffs (Poly poly-str unknown)))
