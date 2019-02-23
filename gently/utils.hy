@@ -18,11 +18,9 @@
                 ~function))))
 
 (defmacro assert-all [&rest forms]
-  `(do
-     (import [gently.utils [join-names]])
-     ~@(lfor form forms
-             `(assert ~form
-                      (+ "Test failed: " (name '~form))))))
+  `~@(lfor form forms
+           `(assert ~form
+                    (+ "Test failed: " (name '~form)))))
 
 (defmacro run-tests []
   `(lfor function ~*test-functions-symbol*
