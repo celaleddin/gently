@@ -14,12 +14,8 @@
 
 ;;;; Documentation string related
 
-(setv *docstring-dict* (dict))
-
 (defmacro attach-docstring [symbol docstring]
-  `(assoc gently.utils.*docstring-dict*
-          (gently.utils.join-names (id ~symbol) ~symbol)
-          ~docstring))
+  `(setattr ~symbol "**doc**" ~docstring))
 
 ;;;; Test related
 
