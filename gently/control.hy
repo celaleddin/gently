@@ -4,6 +4,10 @@
         [gently.utils [print-to-str]])
 
 (defclass TransferFunction []
+  """
+  Transfer function representation layer between
+  the language macros and control package.
+  """
   (defn --init-- [self num den &optional dt]
     (setv self.num (str-to-poly num)
           self.den (str-to-poly den))
@@ -31,4 +35,4 @@
     (print-to-str "" num-str division-str den-str :sep "\n"))
 
   (defn --str-- [self] (.as-str self))
-  (defn --repr-- [self] (.--str-- self)))
+  (setv --repr-- --str--))

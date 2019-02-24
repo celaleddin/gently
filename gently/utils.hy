@@ -4,11 +4,11 @@
 ;;;; General
 
 (defn join-names [&rest args &kwonly [sep " "]]
-  "Join names of `args` seperated by `sep` into a string"
+  "Join names of `args` into a string by separating them with `sep`"
   (.join sep (map name args)))
 
 (defn print-to-str [&rest args &kwargs kwargs]
-  "Print `args` into a string using builtin `print` function"
+  "Print `args` into a string using the builtin `print` function"
   (setv out (io.StringIO))
   (print #* args :file out #** kwargs)
   (setv content (.getvalue out))
@@ -45,8 +45,10 @@
 ;;;; Documentation string related
 
 (defmacro set-docstring [symbol docstring]
+  "Set documentation string `docstring` for `symbol`"
   `(setattr ~symbol "**doc**" ~docstring))
 
 (defmacro get-docstring [symbol]
+  "Get documentation string of `symbol` if it is available"
   `(getattr ~symbol "**doc**"
             (% "No documentation found for symbol '%s'" (name '~symbol))))
