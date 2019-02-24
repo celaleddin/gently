@@ -2,7 +2,7 @@
 
 (import [sympy [Poly Symbol]])
 
-(defn coeffs [poly-str]
+(defn str-to-poly [poly-str]
   (defn unknown-in-poly? [unknown-str]
     (setv pattern (+ ".*\\b" unknown-str "\\b.*"))
     (re.match pattern poly-str))
@@ -10,4 +10,7 @@
                          (unknown-in-poly? "z") "z"
                          "any-another-string"))
   (setv unknown (Symbol unknown-char))
-  (.all_coeffs (Poly poly-str unknown)))
+  (Poly poly-str unknown))
+
+(defn poly-to-str [poly]
+  (.replace (string (.as-expr poly)) "**" "^"))
