@@ -2,15 +2,12 @@
 
 (import sympy)
 
-
 (defclass Poly [sympy.Poly]
   (defn --str-- [self]
-    "Replace power (**) and multiplication (*) symbols with '^' and ' '"
-    (-> (string (.as-expr self))
-        (.replace "**" "^")
-        (.replace "*" " ")))
+    "Replace asterisk style (**) power operator with caret style (^)"
+    (-> (string (.as-expr self)) (.replace "**" "^")))
 
-  (defn as-list [self]
+  (defn int-coeff-list [self]
     (list (map int (.as-list self))))
 
   (setv --repr-- --str--))

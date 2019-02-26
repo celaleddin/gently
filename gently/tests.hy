@@ -2,7 +2,6 @@
 (require [gently.utils [register-tests run-tests assert-all
                         get-docstring]])
 
-
 (register-tests
   (defn test-define []
     (define a 3 "A docstring")
@@ -20,11 +19,10 @@
       (denominator s^2 + 5*s + 10)
       (sampling-period 0.1))
     (assert-all
-      (= (str (numerator a-system)) "4 s + 5")
-      (= (str (denominator a-system)) "s^2 + 5 s + 10")
+      (= (str (numerator a-system)) "4*s + 5")
+      (= (str (denominator a-system)) "s^2 + 5*s + 10")
       (= (str (sampling-period a-system)) "0.1")
       (.startswith (documentation a-system) "A transfer fun"))))
-
 
 (defmain [&rest args]
     (run-tests))

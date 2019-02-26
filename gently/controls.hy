@@ -1,8 +1,22 @@
+(import re)
+
 (import [sympy [Poly Symbol]])
-(import [control [tf]])
+(import [control [TransferFunction :as TF]])
 
 (import [gently.math [str-to-poly]]
         [gently.utils [print-to-str]])
+
+(setv *tf-print-margin* 2)
+
+(defclass EvaluatedTransferFunction [TF]
+  (defn --str-- [self]
+    "Add left margin and replace space style multiplications with asterisk style (*)"
+    (setv default-str (.--str-- (super)))
+    (setv str-with-margin (.replace default-str
+                                    "\n" (+ "\n" (* " " *tf-print-margin*))))
+    (re.sub "\\b \\b" "*" str-with-margin))
+
+  (setv --repr-- --str--))
 
 (defclass TransferFunction []
   """
@@ -18,23 +32,23 @@
   (defn get-den [self] self.den)
   (defn get-dt [self] self.dt)
 
-  (defn num-coeffs [self] (.as-list self.num))
-  (defn den-coeffs [self] (.as-list self.den))
+  (defn num-coeffs [self] (.int-coeff-list self.num))
+  (defn den-coeffs [self] (.int-coeff-list self.den))
 
   (defn evaluate [self var-dict]
     (setv args [(self.num-coeffs) (self.den-coeffs)])
     (when self.dt
       (.append args self.dt))
-    (tf #* args))
+    (EvaluatedTransferFunction #* args))
 
   (defn --str-- [self]
     (setv num-str (string self.num)
           den-str (string self.den)
-          str-size (max (len num-str) (len den-str))
-          width (+ 0 str-size))
+          width (max (len num-str) (len den-str)))
     (setv num-str (.center num-str width)
           den-str (.center den-str width)
-          division-str (.center (* "-" str-size) width))
-    (print-to-str "" num-str division-str den-str :sep "\n"))
+          division-str (* "-" width))
+    (print-to-str "" num-str division-str den-str
+                  :sep (+ "\n" (* " " *tf-print-margin*))))
 
   (setv --repr-- --str--))
