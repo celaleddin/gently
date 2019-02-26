@@ -34,11 +34,9 @@
   (defn get-den [self] self.den)
   (defn get-dt [self] self.dt)
 
-  (defn num-coeffs [self] (.int-coeff-list self.num))
-  (defn den-coeffs [self] (.int-coeff-list self.den))
-
-  (defn evaluate [self var-dict]
-    (setv args [(self.num-coeffs) (self.den-coeffs)])
+  (defn evaluate [self params]
+    (setv args [(.coeff-list self.num params)
+                (.coeff-list self.den params)])
     (when self.dt
       (.append args self.dt))
     (EvaluatedTransferFunction #* args))

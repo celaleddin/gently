@@ -17,11 +17,11 @@
     (define-transfer-function a-system
       "A transfer function representing a system"
       (numerator 4*s + 5)
-      (denominator s^2 + 5*s + 10)
+      (denominator s^2 + 5*a*s + 10)
       (sampling-period 0.1))
     (assert-all
       (= (str (numerator a-system)) "4*s + 5")
-      (= (str (denominator a-system)) "s^2 + 5*s + 10")
+      (= (str (denominator a-system)) "5*a*s + s^2 + 10")
       (= (str (sampling-period a-system)) "0.1")
       (.startswith (documentation a-system) "A transfer fun"))))
 
