@@ -8,6 +8,7 @@
 
 (setv *tf-print-margin* 2)
 
+
 (defclass EvaluatedTransferFunction [TF]
   (defn --str-- [self]
     "Add left margin and replace space style multiplications with asterisk style (*)"
@@ -17,6 +18,7 @@
     (re.sub "\\b \\b" "*" str-with-margin))
 
   (setv --repr-- --str--))
+
 
 (defclass TransferFunction []
   """

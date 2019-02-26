@@ -2,6 +2,7 @@
 
 (import sympy)
 
+
 (defclass Poly [sympy.Poly]
   (defn --str-- [self]
     "Replace asterisk style (**) power operator with caret style (^)"
@@ -11,6 +12,7 @@
     (list (map int (.as-list self))))
 
   (setv --repr-- --str--))
+
 
 (defn str-to-poly [poly-str]
   "Turn a string polynomial into a Poly object"

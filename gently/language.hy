@@ -20,11 +20,11 @@
            (gently.utils.set-docstring ~system-name ~docstring)))
      ~system-name))
 
+
 (defmacro numerator [tf] `(.get-num ~tf))
-
 (defmacro denominator [tf] `(.get-den ~tf))
-
 (defmacro sampling-period [tf] `(.get-dt ~tf))
+
 
 (defmacro define [symbol value &optional docstring]
   `(do
@@ -33,6 +33,7 @@
      (setv ~symbol (gently.python.variable ~value))
      ~(when docstring
         `(gently.utils.set-docstring ~symbol ~docstring))))
+
 
 (defmacro documentation [symbol]
   `(do
