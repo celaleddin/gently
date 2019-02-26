@@ -8,8 +8,8 @@
       (setv docstring None))
   (setv arg-dict (dfor (, k #* v) args [k (join-names #* v)]))
   `(do
-     (import gently.control)
-     (setv ~system-name (gently.control.TransferFunction
+     (import gently.controls)
+     (setv ~system-name (gently.controls.TransferFunction
                           ~(get arg-dict 'numerator)
                           ~(get arg-dict 'denominator)
                           ~(when (in 'sampling-period arg-dict)
@@ -20,11 +20,11 @@
            (gently.utils.set-docstring ~system-name ~docstring)))
      ~system-name))
 
-(defmacro numerator [tf] `(print (.num-as-str ~tf)))
+(defmacro numerator [tf] `(.get-num ~tf))
 
-(defmacro denominator [tf] `(print (.den-as-str ~tf)))
+(defmacro denominator [tf] `(.get-den ~tf))
 
-(defmacro sampling-period [tf] `(print (.dt-as-str ~tf)))
+(defmacro sampling-period [tf] `(.get-dt ~tf))
 
 (defmacro define [symbol value &optional docstring]
   `(do
@@ -37,4 +37,4 @@
 (defmacro documentation [symbol]
   `(do
      (require gently.utils)
-     (print (gently.utils.get-docstring ~symbol))))
+     (gently.utils.get-docstring ~symbol)))

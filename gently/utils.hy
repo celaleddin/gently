@@ -44,9 +44,14 @@
 
 ;;;; Documentation string related
 
+(defclass Docstring [str]
+  (defn --repr-- [self] self))
+
 (defmacro set-docstring [symbol docstring]
   "Set documentation string `docstring` for `symbol`"
-  `(setattr ~symbol "**doc**" ~docstring))
+  `(do
+     (import gently.utils)
+     (setattr ~symbol "**doc**" (gently.utils.Docstring ~docstring))))
 
 (defmacro get-docstring [symbol]
   "Get documentation string of `symbol` if it is available"
