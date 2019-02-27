@@ -7,6 +7,11 @@
   "Join names of `args` into a string by separating them with `sep`"
   (.join sep (map name args)))
 
+(defn expr-name [expr]
+  (if (isinstance expr hy.HyExpression)
+      (+ "(" (join-names #* (lfor e expr (expr-name e))) ")")
+      (name expr)))
+
 (defn print-to-str [&rest args &kwargs kwargs]
   "Print `args` into a string using the builtin `print` function"
   (setv out (io.StringIO))
@@ -33,9 +38,12 @@
 
 (defmacro assert-all [&rest forms]
   "Shorthand for asserting multiple forms"
-  `~@(lfor form forms
-           `(assert ~form
-                    (+ "Test failed: " (name '~form)))))
+  `(do
+     (import [gently.utils [expr-name]])
+     ~@(lfor form forms
+             `(assert ~form
+                      (+ "\nTest failed: "
+                         (expr-name '~form))))))
 
 (defmacro run-tests []
   "Run test functions registered inside the `register-tests`"
