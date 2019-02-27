@@ -1,5 +1,7 @@
 (import io)
 
+(import [hy.models [HySequence]])
+
 
 ;;;; General
 
@@ -8,7 +10,7 @@
   (.join sep (map name args)))
 
 (defn expr-name [expr]
-  (if (isinstance expr hy.HyExpression)
+  (if (isinstance expr HySequence)
       (+ "(" (join-names #* (lfor e expr (expr-name e))) ")")
       (name expr)))
 
@@ -19,6 +21,9 @@
   (setv content (.getvalue out))
   (.close out)
   content)
+
+(defmacro macroexpander [form]
+  `(expr-name (macroexpand-1 ~form)))
 
 
 ;;;; Test related
