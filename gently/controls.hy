@@ -26,19 +26,29 @@
   the language macros and control package.
   """
   (defn --init-- [self num den &optional dt]
-    (setv self.num (str-to-poly num)
-          self.den (str-to-poly den)
-          self.dt (if dt (float dt) 0.0)))
+    (setv self.num (if (string? num) (str-to-poly num) num)
+          self.den (if (string? den) (str-to-poly den) den)
+          self.dt (if dt (float dt) None)))
 
   (defn get-num [self] self.num)
   (defn get-den [self] self.den)
   (defn get-dt [self] self.dt)
 
-  (defn evaluate [self params]
-    (setv args [(.coeff-list self.num params)
-                (.coeff-list self.den params)])
-    (when self.dt
-      (.append args self.dt))
+  (defn evaluate-possible? [self]
+    (not (or self.num.free-symbols-in-domain
+             self.den.free-symbols-in-domain)))
+
+  (defn substitute [self params]
+    (TransferFunction (.substitute self.num params)
+                      (.substitute self.den params)
+                      self.dt))
+
+  (defn evaluate [self]
+    (unless (.evaluate-possible? self)
+      (raise (ValueError (+ "There must be no free symbols "
+                            "in transfer functions."))))
+    (setv args (lfor p [self.num self.den] (.coeff-list p)))
+    (when self.dt (.append args self.dt))
     (EvaluatedTransferFunction #* args))
 
   (defn --str-- [self]

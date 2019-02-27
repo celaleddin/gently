@@ -8,14 +8,17 @@
     "Replace asterisk style (**) power operator with caret style (^)"
     (-> (string (.as-expr self)) (.replace "**" "^")))
 
-  (defn coeff-list [self params]
-    "Return coefficient list when there is no free variable"
-    (setv new-poly (Poly (.subs self params) self.gen)
-          free-symbols new-poly.free-symbols-in-domain)
-    (when free-symbols
-      (raise (ValueError (% "There are free symbols in polynomial: %s"
-                         free-symbols))))
-    (list (map float (.as-list new-poly))))
+  (defn substitute [self params]
+    (Poly (.subs self params) self.gen))
+
+  (defn coeff-list [self]
+    """Return coefficient list if there is no free symbol,
+       else raise an exception"""
+    (list (map (fn [exp]
+                 (if exp.is-Integer (int exp)
+                     exp.is-Float (float exp)
+                     (raise (ValueError "Unknown expression."))))
+               (.as-list self))))
 
   (setv --repr-- --str--))
 
