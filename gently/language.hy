@@ -39,3 +39,17 @@
   `(do
      (require gently.utils)
      (gently.utils.get-docstring ~symbol)))
+
+
+(defmacro/g! step-response [sys &optional [symbol-vars []]]
+  (setv symbol-dict (dfor (, k v) (partition symbol-vars)
+                          [(name k) v]))
+  `(do
+     (import [control [step_response :as ~g!step-response]]
+             [matplotlib [pyplot :as ~g!plt]])
+     (setv ~g!system (.substitute ~sys ~symbol-dict))
+     (print ~g!system)
+     (setv (, ~g!time ~g!response)
+           (~g!step_response (.evaluate ~g!system)))
+     (.plot ~g!plt ~g!time ~g!response)
+     (.show ~g!plt)))

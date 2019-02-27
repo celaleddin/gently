@@ -38,7 +38,7 @@
     (not (or self.num.free-symbols-in-domain
              self.den.free-symbols-in-domain)))
 
-  (defn substitute [self params]
+  (defn substitute [self &optional [params {}]]
     (TransferFunction (.substitute self.num params)
                       (.substitute self.den params)
                       self.dt))
