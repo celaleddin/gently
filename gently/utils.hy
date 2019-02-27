@@ -1,6 +1,6 @@
 (import io)
 
-(import [hy.models [HySequence]])
+(import [hy.models [HySequence HyExpression HyDict]])
 
 
 ;;;; General
@@ -10,8 +10,14 @@
   (.join sep (map name args)))
 
 (defn expr-name [expr]
+  (setv brackets (if (isinstance expr HyExpression) ["(" ")"]
+                     (isinstance expr HyList) ["[" "]"]
+                     (isinstance expr HyDict) ["{" "}"]
+                     ["(" ")"]))
   (if (isinstance expr HySequence)
-      (+ "(" (join-names #* (lfor e expr (expr-name e))) ")")
+      (+ (get brackets 0)
+         (join-names #* (lfor e expr (expr-name e)))
+         (get brackets 1))
       (name expr)))
 
 (defn print-to-str [&rest args &kwargs kwargs]
@@ -23,7 +29,9 @@
   content)
 
 (defmacro macroexpander [form]
-  `(expr-name (macroexpand-1 ~form)))
+  `(do
+     (import gently.utils)
+     (gently.utils.expr-name (macroexpand-1 ~form))))
 
 
 ;;;; Test related
