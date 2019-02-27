@@ -23,7 +23,8 @@
 (defmacro register-tests [&rest functions]
   "Register functions as tests which will be runned with `run-tests`"
   `(do
-     (setv ~*test-functions-symbol* [])
+     (try ~*test-functions-symbol*
+          (except [NameError] (setv ~*test-functions-symbol* [])))
      (defn register-test [function]
        (.append ~*test-functions-symbol* function) function)
      ~@(lfor function functions
@@ -38,8 +39,9 @@
 
 (defmacro run-tests []
   "Run test functions registered inside the `register-tests`"
-  `(lfor function ~*test-functions-symbol*
-         (function)))
+  `(for [function ~*test-functions-symbol*]
+     (do (function) (print "." :end ""))
+     (else (print "\nTests passed!"))))
 
 
 ;;;; Documentation string related
