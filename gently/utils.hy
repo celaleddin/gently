@@ -33,6 +33,14 @@
      (import gently.utils)
      (gently.utils.expr-name (macroexpand-1 ~form))))
 
+(defmacro/g! local-numbers []
+  `(do
+     (import [numbers [Number :as ~g!number]])
+     (dfor (, k v) (.items (locals))
+         :if (and (isinstance k str)
+                  (isinstance v ~g!number))
+         [k v])))
+
 
 ;;;; Test related
 

@@ -53,3 +53,15 @@
            (~g!step_response (.evaluate ~g!system)))
      (.plot ~g!plt ~g!time ~g!response)
      (.show ~g!plt)))
+
+
+(deftag tf [sys]
+  (with-gensyms [tf expr-name s py-eval]
+   `(do
+      (import [gently.controls [EvaluatedTransferFunction :as ~tf]]
+              [gently.utils [expr-name :as ~expr-name]]
+              [builtins [eval :as ~py-eval]])
+      (require [gently.utils [local-numbers]])
+      (setv ~s (~tf [1 0] [1]))
+      (~py-eval (.replace (~expr-name '~sys) "^" "**")
+       #_:globals (local-numbers) #_:locals {"s" ~s}))))

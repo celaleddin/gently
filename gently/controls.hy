@@ -1,7 +1,7 @@
 (import re)
 
 (import [sympy [Poly Symbol]])
-(import [control [TransferFunction :as TF]])
+(import [control [TransferFunction :as EvaluatedTransferFunction]])
 
 (import [gently.math [str-to-poly]]
         [gently.utils [print-to-str]])
@@ -9,15 +9,13 @@
 (setv *tf-print-margin* 2)
 
 
-(defclass EvaluatedTransferFunction [TF]
-  (defn --str-- [self]
-    "Add left margin and replace space style multiplications with asterisk style (*)"
-    (setv default-str (.--str-- (super)))
-    (setv str-with-margin (.replace default-str
-                                    "\n" (+ "\n" (* " " *tf-print-margin*))))
-    (re.sub "\\b \\b" "*" str-with-margin))
-
-  (setv --repr-- --str--))
+(defn evaluated-tf-to-string [self]
+  "Add left margin and replace space style multiplications with asterisk style (*)"
+  (setv default-str (.--str-- self))
+  (setv str-with-margin (.replace default-str
+                                  "\n" (+ "\n" (* " " *tf-print-margin*))))
+  (re.sub "\\b \\b" "*" str-with-margin))
+(setv EvaluatedTransferFunction.--repr-- evaluated-tf-to-string)
 
 
 (defclass TransferFunction []
