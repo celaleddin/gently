@@ -9,15 +9,15 @@
   (setv arg-dict (dfor (, k #* v) args [k (join-names #* v)]))
   `(do
      (import gently.controls)
+     (require gently.utils)
      (setv ~system-name (gently.controls.TransferFunction
                           ~(get arg-dict 'numerator)
                           ~(get arg-dict 'denominator)
                           ~(when (in 'sampling-period arg-dict)
-                             (get arg-dict 'sampling-period))))
+                             (get arg-dict 'sampling-period))
+                          :vals (gently.utils.local-numbers)))
      ~(when docstring
-        `(do
-           (require gently.utils)
-           (gently.utils.set-docstring ~system-name ~docstring)))
+        `(gently.utils.set-docstring ~system-name ~docstring))
      ~system-name))
 
 
@@ -53,6 +53,15 @@
            (~g!step_response (.evaluate ~g!system)))
      (.plot ~g!plt ~g!time ~g!response)
      (.show ~g!plt)))
+
+
+(deftag . [sys-and-vals]
+  (setv (, sys #* vals) sys-and-vals
+        vals (dfor (, k v) (.items (if vals (first vals) {}))
+                   [(name k) v]))
+  `(do
+     (require [gently.utils [local-numbers]])
+     (.substitute ~sys (dict #** ~vals #** (local-numbers)))))
 
 
 (deftag tf [sys]

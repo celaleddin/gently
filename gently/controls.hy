@@ -23,9 +23,9 @@
   Transfer function representation layer between
   the language macros and control package.
   """
-  (defn --init-- [self num den &optional dt]
-    (setv self.num (if (string? num) (str-to-poly num) num)
-          self.den (if (string? den) (str-to-poly den) den)
+  (defn --init-- [self num den &optional dt &kwonly [vals {}]]
+    (setv self.num (if (string? num) (str-to-poly num vals) num)
+          self.den (if (string? den) (str-to-poly den vals) den)
           self.dt (if dt (float dt) None)))
 
   (defn get-num [self] self.num)
