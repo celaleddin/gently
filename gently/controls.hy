@@ -33,8 +33,8 @@
   (defn get-dt [self] self.dt)
 
   (defn evaluate-possible? [self]
-    (not (or self.num.free-symbols-in-domain
-             self.den.free-symbols-in-domain)))
+    (.union self.num.free-symbols-in-domain
+            self.den.free-symbols-in-domain))
 
   (defn substitute [self &optional [params {}]]
     (TransferFunction (.substitute self.num params)
@@ -42,9 +42,11 @@
                       self.dt))
 
   (defn evaluate [self]
-    (unless (.evaluate-possible? self)
+    (setv free-symbols (.evaluate-possible? self))
+    (when free-symbols
       (raise (ValueError (+ "There must be no free symbols "
-                            "in transfer functions."))))
+                            "in transfer functions. There are: "
+                            (string free-symbols)))))
     (setv args (lfor p [self.num self.den] (.coeff-list p)))
     (when self.dt (.append args self.dt))
     (EvaluatedTransferFunction #* args))
