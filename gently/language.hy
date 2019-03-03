@@ -1,4 +1,5 @@
-(import [gently.utils [join-names]])
+(import [gently.utils [expr-name
+                       join-names]])
 
 
 (defmacro define-transfer-function [system-name &rest args]
@@ -6,7 +7,8 @@
       (setv docstring (first args)
             args (rest args))
       (setv docstring None))
-  (setv arg-dict (dfor (, k #* v) args [k (join-names #* v)]))
+  (setv arg-dict (dfor (, k #* v) args
+                       [k (join-names #* (map expr-name v))]))
   `(do
      (import gently.controls)
      (require gently.utils)

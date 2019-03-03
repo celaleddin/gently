@@ -10,10 +10,12 @@
 
 
 (defn evaluated-tf-to-string [self]
-  "Add left margin and replace space style multiplications with asterisk style (*)"
+  "Add left margin and replace space style multiplications
+   with asterisk style (*)"
   (setv default-str (.--str-- self))
   (setv str-with-margin (.replace default-str
-                                  "\n" (+ "\n" (* " " *tf-print-margin*))))
+                                  "\n"
+                                  (+ "\n" (* " " *tf-print-margin*))))
   (re.sub "\\b \\b" "*" str-with-margin))
 (setv EvaluatedTransferFunction.--repr-- evaluated-tf-to-string)
 
