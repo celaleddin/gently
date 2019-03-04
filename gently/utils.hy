@@ -9,18 +9,19 @@
   "Join names of `args` into a string by separating them with `sep`"
   (.join sep (map name args)))
 
-(defn expr-name [expr]
+(defn expr->string [expr]
+  "Turn an expression into a string"
   (setv brackets (if (isinstance expr HyExpression) ["(" ")"]
                      (isinstance expr HyList) ["[" "]"]
                      (isinstance expr HyDict) ["{" "}"]
                      ["(" ")"]))
   (if (isinstance expr HySequence)
       (+ (get brackets 0)
-         (join-names #* (lfor e expr (expr-name e)))
+         (join-names #* (lfor e expr (expr->string e)))
          (get brackets 1))
       (name expr)))
 
-(defn print-to-str [&rest args &kwargs kwargs]
+(defn print-to-string [&rest args &kwargs kwargs]
   "Print `args` into a string using the builtin `print` function"
   (setv out (io.StringIO))
   (print #* args :file out #** kwargs)
@@ -28,12 +29,12 @@
   (.close out)
   content)
 
-(defmacro macroexpander [form]
-  `(do
-     (import gently.utils)
-     (gently.utils.expr-name (macroexpand-1 ~form))))
+(defn macroexpander [form]
+  "Make macroexpansions readable for humans"
+  (expr->string (macroexpand-1 form)))
 
 (defmacro/g! local-numbers []
+  "Filter `(locals)` for string keys and number values"
   `(do
      (import [numbers [Number :as ~g!number]])
      (dfor (, k v) (.items (locals))
@@ -60,11 +61,11 @@
 (defmacro assert-all [&rest forms]
   "Shorthand for asserting multiple forms"
   `(do
-     (import [gently.utils [expr-name]])
+     (import [gently.utils [expr->string]])
      ~@(lfor form forms
              `(assert ~form
                       (+ "\nTest failed: "
-                         (expr-name '~form))))))
+                         (expr->string '~form))))))
 
 (defmacro run-tests []
   "Run test functions registered inside the `register-tests`"
@@ -76,6 +77,7 @@
 ;;;; Documentation string related
 
 (defclass Docstring [str]
+  "A string with a non-quoting --repr-- function"
   (defn --repr-- [self] self))
 
 (defmacro set-docstring [symbol docstring]

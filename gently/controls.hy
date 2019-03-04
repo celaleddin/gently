@@ -3,13 +3,13 @@
 (import [sympy [Poly Symbol]])
 (import [control [TransferFunction :as EvaluatedTransferFunction]])
 
-(import [gently.math [str-to-poly]]
-        [gently.utils [print-to-str]])
+(import [gently.math [string->poly]]
+        [gently.utils [print-to-string]])
 
 (setv *tf-print-margin* 2)
 
 
-(defn evaluated-tf-to-string [self]
+(defn evaluated-tf/to-string [self]
   "Add left margin and replace space style multiplications
    with asterisk style (*)"
   (setv default-str (.--str-- self))
@@ -17,24 +17,26 @@
                                   "\n"
                                   (+ "\n" (* " " *tf-print-margin*))))
   (re.sub "\\b \\b" "*" str-with-margin))
-(setv EvaluatedTransferFunction.--repr-- evaluated-tf-to-string)
+
+(defn evaluated-tf/evaluate [self] self)
+
+(setv EvaluatedTransferFunction.--repr-- evaluated-tf/to-string
+      EvaluatedTransferFunction.evaluate evaluated-tf/evaluate)
 
 
 (defclass TransferFunction []
-  """
-  Transfer function representation layer between
-  the language macros and control package.
-  """
+  """Transfer function representation layer between
+     the language macros and control package."""
   (defn --init-- [self num den &optional dt &kwonly [vals {}]]
-    (setv self.num (if (string? num) (str-to-poly num vals) num)
-          self.den (if (string? den) (str-to-poly den vals) den)
+    (setv self.num (if (string? num) (string->poly num vals) num)
+          self.den (if (string? den) (string->poly den vals) den)
           self.dt (if dt (float dt) None)))
 
   (defn get-num [self] self.num)
   (defn get-den [self] self.den)
   (defn get-dt [self] self.dt)
 
-  (defn evaluate-possible? [self]
+  (defn get-free-symbols [self]
     (.union self.num.free-symbols-in-domain
             self.den.free-symbols-in-domain))
 
@@ -44,7 +46,7 @@
                       self.dt))
 
   (defn evaluate [self]
-    (setv free-symbols (.evaluate-possible? self))
+    (setv free-symbols (.get-free-symbols self))
     (when free-symbols
       (raise (ValueError (+ "There must be no free symbols "
                             "in transfer functions. There are: "

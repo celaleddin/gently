@@ -23,8 +23,8 @@
   (setv --repr-- --str--))
 
 
-(defn str-to-poly [poly-str &optional [vals {}]]
-  "Turn a string polynomial into a Poly object"
+(defn string->poly [poly-str &optional [vals {}]]
+  "Turn a string polynomial into a Poly object by substituting `vals`"
   (defn unknown-in-poly? [unknown-str]
     (setv pattern (+ ".*\\b" unknown-str "\\b.*"))
     (re.match pattern poly-str))

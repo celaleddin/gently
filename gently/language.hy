@@ -1,4 +1,4 @@
-(import [gently.utils [expr-name
+(import [gently.utils [expr->string
                        join-names]])
 
 
@@ -8,7 +8,7 @@
             args (rest args))
       (setv docstring None))
   (setv arg-dict (dfor (, k #* v) args
-                       [k (join-names #* (map expr-name v))]))
+                       [k (join-names #* (map expr->string v))]))
   `(do
      (import gently.controls)
      (require gently.utils)
@@ -67,12 +67,12 @@
 
 
 (deftag tf [sys]
-  (with-gensyms [tf expr-name s py-eval]
+  (with-gensyms [tf expr->string s py-eval]
    `(do
       (import [gently.controls [EvaluatedTransferFunction :as ~tf]]
-              [gently.utils [expr-name :as ~expr-name]]
+              [gently.utils [expr->string :as ~expr->string]]
               [builtins [eval :as ~py-eval]])
       (require [gently.utils [local-numbers]])
       (setv ~s (~tf [1 0] [1]))
-      (~py-eval (.replace (~expr-name '~sys) "^" "**")
+      (~py-eval (.replace (~expr->string '~sys) "^" "**")
        #_:globals (local-numbers) #_:locals {"s" ~s}))))
