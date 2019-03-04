@@ -83,3 +83,16 @@
       (setv ~s (~tf [1 0] [1]))
       (~py-eval (.replace (~expr->string '~sys) "^" "**")
        #_:globals (local-numbers) #_:locals {"s" ~s}))))
+
+
+(defmacro o [&rest paths]
+  (setv (, forward backward) (, [] [])
+        lrest (fn [coll] (list (rest coll))))
+  (for [path paths]
+    (if (= '> (first path)) (.append forward (lrest path))
+        (= '^ (first path)) (.append feedback (lrest path))
+        (continue)))
+  `(do
+     (import [control :as c])
+     (c.parallel
+       ~@(lfor systems forward `(c.series #* ~systems)))))

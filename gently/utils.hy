@@ -29,9 +29,9 @@
   (.close out)
   content)
 
-(defn macroexpander [form]
+(defmacro macroexpander [form]
   "Make macroexpansions readable for humans"
-  (expr->string (macroexpand-1 form)))
+  `(expr->string (macroexpand ~form)))
 
 (defmacro/g! local-numbers []
   "Filter `(locals)` for string keys and number values"
