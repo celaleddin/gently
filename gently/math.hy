@@ -33,3 +33,7 @@
                          "s"))
   (setv unknown (sympy.Symbol unknown-char))
   (.substitute (Poly poly-str unknown) vals))
+
+
+(defn coeff-list->poly [coeff-list symbol]
+  (Poly coeff-list (sympy.Symbol (name symbol))))

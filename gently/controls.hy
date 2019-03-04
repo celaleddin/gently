@@ -3,7 +3,7 @@
 (import [sympy [Poly Symbol]])
 (import [control [TransferFunction :as EvaluatedTransferFunction]])
 
-(import [gently.math [string->poly]]
+(import [gently.math [string->poly coeff-list->poly]]
         [gently.utils [print-to-string]])
 
 (setv *tf-print-margin* 2)
@@ -18,10 +18,15 @@
                                   (+ "\n" (* " " *tf-print-margin*))))
   (re.sub "\\b \\b" "*" str-with-margin))
 
-(defn evaluated-tf/evaluate [self] self)
-
-(setv EvaluatedTransferFunction.--repr-- evaluated-tf/to-string
-      EvaluatedTransferFunction.evaluate evaluated-tf/evaluate)
+(defmacro coeff-list->poly/method [attr]
+  `(fn [self] (coeff-list->poly (get (getattr self ~(name attr)) 0 0)
+                                (if self.dt 'z 's))))
+(setv ETF EvaluatedTransferFunction
+      ETF.--repr-- evaluated-tf/to-string
+      ETF.evaluate (fn [self] self)
+      ETF.get-num (coeff-list->poly/method num)
+      ETF.get-den (coeff-list->poly/method den)
+      ETF.get-dt (fn [self] self.dt))
 
 
 (defclass TransferFunction []
@@ -62,7 +67,7 @@
     (setv num-str (.center num-str width)
           den-str (.center den-str width)
           division-str (* "-" width))
-    (print-to-str "" num-str division-str den-str
+    (print-to-string "" num-str division-str den-str
                   :sep (+ "\n" (* " " *tf-print-margin*))))
 
   (setv --repr-- --str--))

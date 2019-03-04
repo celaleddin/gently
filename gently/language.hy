@@ -1,5 +1,7 @@
 (import [gently.utils [expr->string
                        join-names]])
+(import [gently.controls [TransferFunction
+                          EvaluatedTransferFunction]])
 
 
 (defmacro define-transfer-function [system-name &rest args]
@@ -7,8 +9,7 @@
       (setv docstring (first args)
             args (rest args))
       (setv docstring None))
-  (setv arg-dict (dfor (, k #* v) args
-                       [k (join-names #* (map expr->string v))]))
+  (setv arg-dict (dfor (, k #* v) args [k (join-names #* v)]))
   `(do
      (import gently.controls)
      (require gently.utils)
@@ -23,10 +24,16 @@
      ~system-name))
 
 
-(defmacro numerator [tf] `(.get-num ~tf))
-(defmacro denominator [tf] `(.get-den ~tf))
-(defmacro sampling-period [tf] `(.get-dt ~tf))
+(defmacro tf-operator [op-name arg-name form]
+  `(defn ~op-name [~arg-name]
+     (unless (isinstance ~arg-name (, TransferFunction
+                                      EvaluatedTransferFunction))
+       (raise (ValueError "Argument must be a transfer function.")))
+     ~form))
 
+(tf-operator numerator tf (.get-num tf))
+(tf-operator denominator tf (.get-den tf))
+(tf-operator sampling-period tf (.get-dt tf))
 
 (defmacro define [symbol value &optional docstring]
   `(do

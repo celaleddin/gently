@@ -1,3 +1,4 @@
+(import [gently.language [*]])
 (require [gently.language [*]])
 (require [gently.utils [register-tests run-tests assert-all
                         get-docstring]])
