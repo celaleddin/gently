@@ -26,7 +26,8 @@
       ETF.evaluate (fn [self] self)
       ETF.get-num (coeff-list->poly/method num)
       ETF.get-den (coeff-list->poly/method den)
-      ETF.get-dt (fn [self] self.dt))
+      ETF.get-dt (fn [self] self.dt)
+      ETF.substitute (fn [self &optional [params {}]] self))
 
 
 (defclass TransferFunction []

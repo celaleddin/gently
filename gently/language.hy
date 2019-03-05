@@ -1,3 +1,5 @@
+(require [hy.extra.anaphoric [ap-if]])
+
 (import [gently.utils [expr->string
                        join-names]])
 (import [gently.controls [TransferFunction
@@ -50,27 +52,13 @@
      (gently.utils.get-docstring ~symbol)))
 
 
-(defmacro/g! step-response [sys &optional [symbol-vars []]]
-  (setv symbol-dict (dfor (, k v) (partition symbol-vars)
-                          [(name k) v]))
-  `(do
-     (import [control [step_response :as ~g!step-response]]
-             [matplotlib [pyplot :as ~g!plt]])
-     (setv ~g!system (.substitute ~sys ~symbol-dict))
-     (print ~g!system)
-     (setv (, ~g!time ~g!response)
-           (~g!step_response (.evaluate ~g!system)))
-     (.plot ~g!plt ~g!time ~g!response)
-     (.show ~g!plt)))
-
-
 (deftag . [sys-and-vals]
-  (setv (, sys #* vals) sys-and-vals
-        vals (dfor (, k v) (.items (if vals (first vals) {}))
-                   [(name k) v]))
+  (setv sys (first sys-and-vals)
+        vals (ap-if (second sys-and-vals) it [])
+        values (dfor (, k v) (partition vals) [(name k) v]))
   `(do
      (require [gently.utils [local-numbers]])
-     (.substitute ~sys (dict #** ~vals #** (local-numbers)))))
+     (.substitute ~sys {#** (local-numbers) #** ~values})))
 
 
 (deftag tf [sys]
