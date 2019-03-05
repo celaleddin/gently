@@ -86,13 +86,24 @@
 
 
 (defmacro o [&rest paths]
-  (setv (, forward backward) (, [] [])
-        lrest (fn [coll] (list (rest coll))))
+  (setv forward-paths []
+        feedback-path []
+        lrest (fn [coll] (list (rest coll)))
+        lreversed (fn [coll] (list (reversed coll))))
   (for [path paths]
-    (if (= '> (first path)) (.append forward (lrest path))
-        (= '^ (first path)) (.append feedback (lrest path))
+    (if (= '> (first path)) (.append forward-paths (lrest path))
+        (in (first path) '(^ ^+ ^-)) (setv feedback-path (lrest path)
+                                           feedback-type (first path))
         (continue)))
+  (setv import-statement `(import [control :as c])
+        forward-result `(c.parallel
+                          ~@(lfor systems forward-paths
+                                  `(c.series #* ~systems))))
   `(do
-     (import [control :as c])
-     (c.parallel
-       ~@(lfor systems forward `(c.series #* ~systems)))))
+     ~import-statement
+     ~(if feedback-path
+          `(c.feedback
+             ~forward-result
+             (c.series #* ~(lreversed feedback-path))
+             ~(if (in feedback-type '(^ ^-)) -1 +1))
+          forward-result)))
