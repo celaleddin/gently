@@ -1,17 +1,16 @@
-(require [hy.extra.anaphoric [ap-if]])
-
 (import [gently.utils [expr->string
                        join-names]])
 (import [gently.controls [TransferFunction
                           EvaluatedTransferFunction]])
 
 
-(defmacro define-transfer-function [system-name &rest args]
-  (if (string? (first args))
-      (setv docstring (first args)
-            args (rest args))
+(defmacro define-transfer-function [system-name &rest system-args]
+  "Define a transfer function"
+  (if (string? (first system-args))
+      (setv docstring (first system-args)
+            system-args (rest system-args))
       (setv docstring None))
-  (setv arg-dict (dfor (, k #* v) args [k (join-names #* v)]))
+  (setv arg-dict (dfor (, k #* v) system-args [k (join-names #* v)]))
   `(do
      (import gently.controls)
      (require gently.utils)
@@ -26,18 +25,24 @@
      ~system-name))
 
 
-(defmacro tf-operator [op-name arg-name form]
+(defmacro %tf-operator [op-name arg-name form &optional docstring]
+  "Define a form as a transfer function operation"
   `(defn ~op-name [~arg-name]
+     ~docstring
      (unless (isinstance ~arg-name (, TransferFunction
                                       EvaluatedTransferFunction))
        (raise (ValueError "Argument must be a transfer function.")))
      ~form))
 
-(tf-operator numerator tf (.get-num tf))
-(tf-operator denominator tf (.get-den tf))
-(tf-operator sampling-period tf (.get-dt tf))
+(%tf-operator numerator tf (.get-num tf)
+              "Get the numerator of transfer function")
+(%tf-operator denominator tf (.get-den tf)
+              "Get the denominator of transfer function")
+(%tf-operator sampling-period tf (.get-dt tf)
+              "Get the sampling period of transfer function")
 
 (defmacro define [symbol value &optional docstring]
+  "Define a variable"
   `(do
      (import gently.python)
      (require gently.utils)
@@ -47,21 +52,22 @@
 
 
 (defmacro documentation [symbol]
+  "Get the documentation of symbol"
   `(do
      (require gently.utils)
      (gently.utils.get-docstring ~symbol)))
 
 
-(deftag . [sys-and-vals]
-  (setv sys (first sys-and-vals)
-        vals (ap-if (second sys-and-vals) it [])
-        values (dfor (, k v) (partition vals) [(name k) v]))
+(defmacro evaluate [system &optional [values '()]]
+  "Evaluate a system using given `values`"
+  (setv vals (dfor (, k v) (partition values) [(name k) v]))
   `(do
      (require [gently.utils [local-numbers]])
-     (.substitute ~sys {#** (local-numbers) #** ~values})))
+     (.substitute ~system {#** (local-numbers) #** ~vals})))
 
 
 (deftag tf [sys]
+  "Define a transfer function in a short way, like `#tf(1/s)`"
   (with-gensyms [tf expr->string s py-eval]
    `(do
       (import [gently.controls [EvaluatedTransferFunction :as ~tf]]
@@ -73,7 +79,8 @@
        #_:globals (local-numbers) #_:locals {"s" ~s}))))
 
 
-(defmacro o [&rest paths]
+(defmacro connect [&rest paths]
+  "Connect systems with `>` as series and with `^` as feedback"
   (setv forward-paths []
         feedback-path []
         lrest (fn [coll] (list (rest coll)))
@@ -95,3 +102,5 @@
              (c.series #* ~(lreversed feedback-path))
              ~(if (in feedback-type '(^ ^-)) -1 +1))
           forward-result)))
+
+(setv (get --macros-- "o") (get --macros-- "connect"))
