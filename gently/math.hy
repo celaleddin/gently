@@ -37,3 +37,12 @@
 
 (defn coeff-list->poly [coeff-list symbol]
   (Poly coeff-list (sympy.Symbol (name symbol))))
+
+
+(defn poly-multiply [&rest polys]
+  (setv poly-var (getattr (first polys) "gen"))
+  (Poly (* #* polys) poly-var))
+
+(defn poly-divide [&rest polys]
+  (setv poly-var (getattr (first polys) "gen"))
+  (Poly (/ #* polys) poly-var))

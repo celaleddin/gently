@@ -3,7 +3,8 @@
 (import [sympy [Poly Symbol]])
 (import [control [TransferFunction :as EvaluatedTransferFunction]])
 
-(import [gently.math [string->poly coeff-list->poly]]
+(import [gently.math [string->poly coeff-list->poly
+                      poly-multiply poly-divide]]
         [gently.utils [print-to-string]])
 
 (setv *tf-print-margin* 2)
@@ -69,6 +70,42 @@
           den-str (.center den-str width)
           division-str (* "-" width))
     (print-to-string "" num-str division-str den-str
-                  :sep (+ "\n" (* " " *tf-print-margin*))))
+                     :sep (+ "\n" (* " " *tf-print-margin*))))
 
   (setv --repr-- --str--))
+
+
+(defmacro/g! ensure-all-dt-same [systems into]
+  `(do
+     (setv ~g!all-dt (list (distinct (map (fn [sys] (.get-dt sys)) ~systems))))
+     (if (= 1 (len ~g!all-dt))
+         (setv ~into (first ~g!all-dt))
+         (raise (ValueError "All sampling periods must be same")))))
+
+
+(defn series [&rest systems]
+  "Connect `systems` in series"
+  (ensure-all-dt-same systems dt)
+  (defmacro poly-multiply-with-key [&key key]
+    `(poly-multiply #* (map (fn [sys] (~key sys)) systems)))
+  (setv num-multiplied (poly-multiply-with-key :key .get-num)
+        den-multiplied (poly-multiply-with-key :key .get-den))
+  (TransferFunction num-multiplied den-multiplied dt))
+
+
+(defn feedback [forward-path &optional feedback-path feedback-sign]
+  (ensure-all-dt-same [forward-path feedback-path] dt)
+  )
+
+
+(defn parallel-of-two [sys-1 sys-2]
+  "Connect two systems in parallel"
+  (ensure-all-dt-same [sys-1 sys-2] dt)
+  (TransferFunction (+ (poly-multiply (.get-num sys-1) (.get-den sys-2))
+                       (poly-multiply (.get-num sys-2) (.get-den sys-1)))
+                    (poly-multiply (.get-den sys-1) (.get-den sys-2))
+                    dt))
+
+(defn parallel [&rest systems]
+  "Connect `systems` in parallel"
+  (reduce parallel-of-two systems))
