@@ -42,6 +42,7 @@
 (%tf-operator sampling-period tf (.get-dt tf)
               "Get the sampling period of transfer function")
 
+
 (defmacro define [symbol value &optional docstring]
   "Define a variable"
   `(do
@@ -57,6 +58,14 @@
   `(do
      (require gently.utils)
      (gently.utils.get-docstring ~symbol)))
+
+
+(defmacro/g! doc [macro-symbol]
+  "Get the documentation of macro `macro-symbol`"
+  (setv macro-name (.replace (name macro-symbol) "-" "_"))
+  `(do
+     (require [hy.core.macros [doc :as ~g!hy-doc]])
+     (~g!hy-doc ~(HySymbol macro-name))))
 
 
 (defmacro evaluate [system &optional [values '()]]
