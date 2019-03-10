@@ -10,7 +10,8 @@
       (setv docstring (first system-args)
             system-args (rest system-args))
       (setv docstring None))
-  (setv arg-dict (dfor (, k #* v) system-args [k (join-names #* v)]))
+  (setv arg-dict (dfor (, k #* v) system-args
+                       [k (join-names #* (map expr->string v))]))
   `(do
      (import gently.controls)
      (require gently.utils)
