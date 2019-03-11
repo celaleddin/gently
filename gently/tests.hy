@@ -1,10 +1,10 @@
 (import [sympy [Symbol]])
 
 (import [gently.language [*]])
-(import [gently.math [Poly]])
 (require [gently.language [*]])
-(require [gently.utils [register-tests run-tests assert-all
-                        get-docstring]])
+
+(import [gently.math [Poly]])
+(require [gently.utils [register-tests run-tests assert-all]])
 
 
 (register-tests

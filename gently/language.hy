@@ -1,7 +1,9 @@
-(import [gently.utils [expr->string
-                       join-names]])
+(import [gently.utils [expr->string]])
 (import [gently.controls [TransferFunction
-                          EvaluatedTransferFunction]])
+                          EvaluatedTransferFunction
+                          numerator
+                          denominator
+                          sampling-period]])
 
 
 (defmacro define-transfer-function [system-name &rest system-args]
@@ -11,7 +13,7 @@
             system-args (rest system-args))
       (setv docstring None))
   (setv arg-dict (dfor (, k #* v) system-args
-                       [k (join-names #* (map expr->string v))]))
+                       [k (.join " " (map expr->string v))]))
   `(do
      (import gently.controls)
      (require gently.utils)
@@ -19,28 +21,10 @@
                           ~(get arg-dict 'numerator)
                           ~(get arg-dict 'denominator)
                           ~(when (in 'sampling-period arg-dict)
-                             (get arg-dict 'sampling-period))
-                          :vals (gently.utils.local-numbers)))
+                             (get arg-dict 'sampling-period))))
      ~(when docstring
         `(gently.utils.set-docstring ~system-name ~docstring))
      ~system-name))
-
-
-(defmacro %tf-operator [op-name arg-name form &optional docstring]
-  "Define a form as a transfer function operation"
-  `(defn ~op-name [~arg-name]
-     ~docstring
-     (unless (isinstance ~arg-name (, TransferFunction
-                                      EvaluatedTransferFunction))
-       (raise (ValueError "Argument must be a transfer function.")))
-     ~form))
-
-(%tf-operator numerator tf (.get-num tf)
-              "Get the numerator of transfer function")
-(%tf-operator denominator tf (.get-den tf)
-              "Get the denominator of transfer function")
-(%tf-operator sampling-period tf (.get-dt tf)
-              "Get the sampling period of transfer function")
 
 
 (defmacro define [symbol value &optional docstring]
@@ -68,28 +52,29 @@
      (~g!hy-doc ~(HySymbol macro-name))))
 
 
-(defmacro evaluate [system &optional [values '()]]
+(defmacro/g! evaluate [system &optional [values '()]]
   "Evaluate a system using given `values`"
   (setv vals (dfor (, k v) (partition values) [(name k) v]))
   `(do
-     (require [gently.utils [local-numbers]])
-     (.substitute ~system {#** (local-numbers) #** ~vals})))
+     (require [gently.utils [local-numbers :as ~g!local-numbers]])
+     (.substitute ~system {#** (~g!local-numbers) #** ~vals})))
 
 
 (deftag tf [sys]
   "Define a transfer function in a short way, like `#tf(1/s)`"
-  (with-gensyms [tf expr->string s py-eval]
+  (with-gensyms [tf expr->string s py-eval local-numbers]
    `(do
       (import [gently.controls [EvaluatedTransferFunction :as ~tf]]
               [gently.utils [expr->string :as ~expr->string]]
               [builtins [eval :as ~py-eval]])
-      (require [gently.utils [local-numbers]])
+      (require [gently.utils [local-numbers :as ~local-numbers]])
       (setv ~s (~tf [1 0] [1]))
-      (~py-eval (.replace (~expr->string '~sys) "^" "**")
-       #_:globals (local-numbers) #_:locals {"s" ~s}))))
+      (~py-eval (+ (.replace (~expr->string '~sys) "^" "**")
+                   "+ 0*s") ; to turn integers to transfer functions
+       #_:globals (~local-numbers) #_:locals {"s" ~s}))))
 
 
-(defmacro connect [&rest paths]
+(defmacro/g! connect [&rest paths]
   "Connect systems with `>` as series and with `^` as feedback"
   (setv forward-paths []
         feedback-path []
@@ -100,17 +85,17 @@
         (in (first path) '(^ ^+ ^-)) (setv feedback-path (lrest path)
                                            feedback-type (first path))
         (continue)))
-  (setv import-statement `(import [control :as c])
-        forward-result `(c.parallel
+  (setv import-statement `(import [gently.controls :as connect])
+        forward-result `(connect.parallel
                           ~@(lfor systems forward-paths
-                                  `(c.series #* ~systems))))
+                                  `(connect.series #* ~systems))))
   `(do
      ~import-statement
      ~(if feedback-path
-          `(c.feedback
+          `(connect.feedback
              ~forward-result
-             (c.series #* ~(lreversed feedback-path))
-             ~(if (in feedback-type '(^ ^-)) -1 +1))
+             (connect.series #* ~(lreversed feedback-path))
+             ~(if (in feedback-type '(^ ^-)) '- '+))
           forward-result)))
 
 (setv (get --macros-- "o") (get --macros-- "connect"))

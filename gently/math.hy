@@ -8,17 +8,30 @@
     "Replace asterisk style (**) power operator with caret style (^)"
     (-> (string (.as-expr self)) (.replace "**" "^")))
 
-  (defn substitute [self params]
-    (Poly (.subs self params) self.gen))
+  (defn substitute [self values]
+    "Substitute free symbols of the polynomial using the dict `values`"
+    (Poly (.subs self values) self.gen))
 
   (defn coeff-list [self]
-    """Return coefficient list if there is no free symbol,
-       else raise an exception"""
+    "Return coefficient list if there is no free symbol,
+     else raise an exception"
     (list (map (fn [exp]
                  (if exp.is-Integer (int exp)
                      exp.is-Float (float exp)
                      (raise (ValueError "Unknown expression."))))
                (.as-list self))))
+
+  (defn --mul-- [self other]
+    (.ensure-same-symbols self other)
+    (Poly (sympy.Poly.--mul-- self other) self.gen))
+
+  (defn --div-- [self other]
+    (.ensure-same-symbols self other)
+    (Poly (sympy.Poly.--div-- self other) self.gen))
+
+  (defn ensure-same-symbols [self other]
+    (unless (= self.gen other.gen)
+      (raise (ValueError "Polynomial unknowns must be the same"))))
 
   (setv --repr-- --str--))
 
@@ -36,13 +49,5 @@
 
 
 (defn coeff-list->poly [coeff-list symbol]
+  "Turn a coefficient list into a Poly object"
   (Poly coeff-list (sympy.Symbol (name symbol))))
-
-
-(defn poly-multiply [&rest polys]
-  (setv poly-var (getattr (first polys) "gen"))
-  (Poly (* #* polys) poly-var))
-
-(defn poly-divide [&rest polys]
-  (setv poly-var (getattr (first polys) "gen"))
-  (Poly (/ #* polys) poly-var))
