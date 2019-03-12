@@ -21,11 +21,11 @@
          (get brackets 1))
       (name expr)))
 
-(defn print-to-string [&rest args &kwargs kwargs]
+(defn print-to-string [&rest args &kwonly [sep " "] [initial ""]]
   "Print `args` into a string using the builtin `print` function"
   (setv out (io.StringIO))
-  (print #* args :file out #** kwargs)
-  (setv content (.getvalue out))
+  (print #* args :file out :sep sep)
+  (setv content (+ initial (.getvalue out)))
   (.close out)
   content)
 

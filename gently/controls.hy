@@ -71,8 +71,13 @@
     (setv num-str (.center num-str width)
           den-str (.center den-str width)
           division-str (* "-" width))
-    (print-to-string "" num-str division-str den-str
-                     :sep (+ "\n" (* " " *tf-print-margin*))))
+    (setv seperator (+ "\n" (* " " *tf-print-margin*)))
+    (setv num-and-den (print-to-string "" num-str division-str den-str
+                                       :sep seperator))
+    (if self.dt
+        (print-to-string "" (+ "dt = " (string self.dt))
+                         :sep seperator :initial num-and-den)
+        num-and-den))
   (setv --repr-- --str--))
 
 
