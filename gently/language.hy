@@ -52,8 +52,9 @@
      (~g!hy-doc ~(HySymbol macro-name))))
 
 
-(defmacro/g! evaluate [system &optional [values '()]]
-  "Evaluate a system using given `values`"
+(defmacro/g! substitute [system &optional [values '()]]
+  "Substitute free symbols of `system` with `values`
+   Example: (substitute a-system (a 1 b 2 c 3))"
   (setv vals (dfor (, k v) (partition values) [(name k) v]))
   `(do
      (require [gently.utils [local-numbers :as ~g!local-numbers]])
