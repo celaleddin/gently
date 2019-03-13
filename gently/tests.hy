@@ -21,11 +21,11 @@
     (define-transfer-function a-system
       "A transfer function representing a system"
       (numerator 4*s + 5)
-      (denominator s^2 + 5*a*s + 10)
+      (denominator s^2 + 5*(a+3)*s + 10)
       (sampling-period 0.1))
     (assert-all
       (= (.coeff-list (numerator a-system)) [4 5])
-      (= (denominator a-system) (Poly "s^2 + 5*a*s + 10" (Symbol "s")))
+      (= (denominator a-system) (Poly "s^2 + 5*(a+3)*s + 10" (Symbol "s")))
       (= (sampling-period a-system) 0.1)
       (.startswith (documentation a-system) "A transfer fun")))
 

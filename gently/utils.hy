@@ -29,9 +29,11 @@
   (.close out)
   content)
 
-(defmacro macroexpander [form]
+(defmacro/g! macroexpander [form]
   "Make macroexpansions readable for humans"
-  `(expr->string (macroexpand ~form)))
+  `(do
+     (import [gently.utils [expr->string :as ~g!expr->string]])
+     (~g!expr->string (macroexpand ~form))))
 
 (defmacro/g! local-numbers []
   "Filter `(locals)` for string keys and number values"
@@ -72,21 +74,3 @@
   `(for [function ~*test-functions-symbol*]
      (do (function) (print "." :end ""))
      (else (print "\nTests passed!"))))
-
-
-;;;; Documentation string related
-
-(defclass Docstring [str]
-  "A string with a non-quoting --repr-- function"
-  (defn --repr-- [self] self))
-
-(defmacro set-docstring [symbol docstring]
-  "Set documentation string `docstring` for `symbol`"
-  `(do
-     (import gently.utils)
-     (setattr ~symbol "**doc**" (gently.utils.Docstring ~docstring))))
-
-(defmacro get-docstring [symbol]
-  "Get documentation string of `symbol` if it is available"
-  `(getattr ~symbol "**doc**"
-            (% "No documentation found for symbol '%s'" (name '~symbol))))
