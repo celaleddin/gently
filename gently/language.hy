@@ -1,9 +1,9 @@
 (import [gently.utils [expr->string]])
-(import [gently.controls [TransferFunction
-                          EvaluatedTransferFunction
-                          numerator
-                          denominator
-                          sampling-period]])
+(import [gently.transfer_functions [TransferFunction
+                                    EvaluatedTransferFunction
+                                    numerator
+                                    denominator
+                                    sampling-period]])
 
 
 (defmacro define-transfer-function [system-name &rest system-args]
@@ -15,9 +15,9 @@
   (setv arg-dict (dfor (, k #* v) system-args
                        [k (.join " " (map expr->string v))]))
   `(do
-     (import gently.controls)
+     (import gently.transfer_functions)
      (require gently.utils)
-     (setv ~system-name (gently.controls.TransferFunction
+     (setv ~system-name (gently.transfer_functions.TransferFunction
                           ~(get arg-dict 'numerator)
                           ~(get arg-dict 'denominator)
                           ~(when (in 'sampling-period arg-dict)
@@ -65,7 +65,7 @@
   "Define a transfer function in a short way, like `#tf(1/s)`"
   (with-gensyms [tf expr->string s py-eval local-numbers]
    `(do
-      (import [gently.controls [EvaluatedTransferFunction :as ~tf]]
+      (import [gently.transfer_functions [EvaluatedTransferFunction :as ~tf]]
               [gently.utils [expr->string :as ~expr->string]]
               [builtins [eval :as ~py-eval]])
       (require [gently.utils [local-numbers :as ~local-numbers]])
@@ -86,7 +86,7 @@
         (in (first path) '(^ ^+ ^-)) (setv feedback-path (lrest path)
                                            feedback-type (first path))
         (continue)))
-  (setv import-statement `(import [gently.controls :as connect])
+  (setv import-statement `(import [gently.transfer_functions :as connect])
         forward-result `(connect.parallel
                           ~@(lfor systems forward-paths
                                   `(connect.series #* ~systems))))
