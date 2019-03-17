@@ -17,5 +17,9 @@ setup(
         'gently': ['*.hy'],
     },
     install_requires=['hy', 'sympy', 'control', 'matplotlib'],
-    scripts=['scripts/gently', 'scripts/gently.bat'],
+    entry_points={
+        'console_scripts': [
+            'gently = gently:gently_shell',
+        ],
+    }
 )
