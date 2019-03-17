@@ -8,8 +8,8 @@ It uses [python-control](https://python-control.readthedocs.io/en/latest/ "pytho
 
 ## Installing
 
-If you are familiar with Python and you know what you are doing, here is how to install Gently:
+Gently requires Python 3. If you are familiar with Python and know how to install a package with pip, here is how to install Gently:
 
-    pip install https://github.com/celaleddin/gently/archive/master.zip
+    pip install gently
 
-If you are not sure what this is, you can read the [installation](https://github.com/celaleddin/gently/blob/master/docs/install.md "How to install Gently?") section of the Gently documentation.
+If you are not sure what this is, you can read the [installation guide](https://github.com/celaleddin/gently/blob/master/docs/install.md "How to install Gently?").

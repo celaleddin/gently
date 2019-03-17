@@ -3,14 +3,16 @@
 Gently requires Python 3. It is recommended to install Gently inside a Python virtual environment using pip (package installer for Python). You can follow the steps below to check for requirements, create a virtual environment and install Gently.
 
 
-### Is Python 3 installed on your system?
+### Is Python installed on your system?
 
-You can run `python --version` and `python3 --version` on your command line to see if you have Python 3.
+You can run `python --version` and `python3 --version` on your command line (terminal on GNU/Linux and macOS, cmd or Powershell on Windows) to see if you have Python installed and configured on your computer.
 
     $ python3 --version
     Python 3.5.2
 
-It must print something like `Python 3.x.x` (not `Python 2.x.x` or `python: command not found`). If it doesn't, install [Python 3](https://www.python.org/downloads/ "Download Python 3").
+It must print something like `Python 3.x.x` (not `Python 2.x.x` or `python: command not found`). If it doesn't, install [Python 3](https://www.python.org/downloads/ "Download Python 3"). Note the command corresponding to Python 3, you will use that command in the next steps.
+
+_Note for Windows users:_ While installing Python, make sure to check the checkbox related to adding Python to PATH. If you don't add Python to PATH, you can't reach it on command line. If you have Python installed on your computer and the command line doesn't recognize it, you need to configure you PATH.
 
 
 ### Is pip installed on your system?
@@ -20,7 +22,7 @@ You can run `pip --version` and `pip3 --version` to check if pip is installed on
     $ pip3 --version
     pip 8.1.1 from /usr/lib/python3/dist-packages (python 3.5)
 
-You can see which Python does pip belong to at the end of the output. If pip is not available for Python 3, install [pip](https://pip.pypa.io/en/latest/installing/#installing-with-get-pip-py "Installing pip").
+You can see which Python does pip belong to at the end of the output. If pip is not available for Python 3, install [pip](https://pip.pypa.io/en/latest/installing/#installing-with-get-pip-py "Installing pip") with the command you noted in the previous step.
 
 
 ### How to create a virtual environment?
@@ -35,20 +37,24 @@ It will create a directory named `gently-env` in your working directory and set 
 
 ...and on Windows:
 
-    gently-env/Scripts/activate.bat
+    gently-env\Scripts\activate.bat  :: on cmd
+    gently-env\Scripts\activate.ps1  :: on powershell 
 
 
 ### How to finally install and run Gently?
 
 You can now install Gently to the activated virtual environment with the following command:
 
-    pip install https://github.com/celaleddin/gently/archive/master.zip
+    pip install gently
 
 Type `gently` and press <kbd>Enter</kbd> to start the Gently shell. Enjoy!
 
-#### Note:
+_Note:_ Since you've installed Gently inside the virtual environment, the next time you want to use it, you must first activate the virtual environment `gently-env`.
 
-Since you've installed Gently inside the virtual environment, you must activate it to run Gently. So, the next time you want to use Gently, you must first activate the virtual environment `gently-env` in order to run Gently.
-
-    source gently-env/bin/activate
+    source gently-env/bin/activate  # or the Windows variants
     gently
+    
+    
+### Further help
+
+If you experience problems with installing Gently, feel free to open an issue describing your situation on [GitHub](https://github.com/celaleddin/gently/issues "GitHub Issues").
