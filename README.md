@@ -10,6 +10,6 @@ It uses [python-control](https://python-control.readthedocs.io/en/latest/ "pytho
 
 If you are familiar with Python and you know what you are doing, here is how to install Gently:
 
-```pip install https://github.com/celaleddin/gently/archive/master.zip```
+    pip install https://github.com/celaleddin/gently/archive/master.zip
 
-If you are not sure what this is, you can read the [install](https://github.com/celaleddin/gently/blob/master/docs/install.md "How to install Gently?") section of the Gently documentation.
+If you are not sure what this is, you can read the [install](https://github.com/celaleddin/gently/blob/documentation/docs/install.md "How to install Gently?") section of the Gently documentation.
