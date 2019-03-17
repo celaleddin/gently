@@ -45,5 +45,4 @@
       (= (.coeff-list (denominator result)) [78]))))
 
 
-(defmain [&rest args]
-    (run-tests))
+(run-tests)
