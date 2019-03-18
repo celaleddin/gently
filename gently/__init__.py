@@ -3,6 +3,7 @@ import io
 import argparse
 
 from hy.cmdline import run_repl, HyREPL
+from hy.errors import filtered_hy_exceptions, hy_exc_handler
 
 
 COMMANDLINE_USAGE = 'gently [file]'
@@ -17,7 +18,7 @@ PREPARATION_COMMAND = """
 (require [gently.language [*]])
 None
 """
-GREETING_COMMAND = '(print "Welcome to Gently!")'
+GREETING_COMMAND = '(print "\nWelcome to Gently!")'
 
 
 def commandline_handler(arguments):
@@ -40,11 +41,17 @@ def commandline_handler(arguments):
         filename = options.args[0]
         with io.open(filename, 'r', encoding='utf-8') as f:
             source = f.read()
-        repl.runsource(source, filename=filename)
-        if not options.i:
+        with filtered_hy_exceptions():
+            result = repl.runsource(source, filename=filename)
+
+        # If the command was prematurely ended, show an error (just like Hy)
+        if result:
+            hy_exc_handler(sys.last_type, sys.last_value, sys.last_traceback)
+
+        if not options.interactive:
             repl.runsource('(quit)', filename='<string>')
-    else:
-        repl.runsource(GREETING_COMMAND, filename='<string>')
+
+    repl.runsource(GREETING_COMMAND, filename='<string>')
     return run_repl(repl)
 
 
