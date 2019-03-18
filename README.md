@@ -1,6 +1,6 @@
 # Gently
 
-Gently is a tool for designing and analysing control systems. It is not complete and in active development.
+Gently is a tool for designing and analysing control systems.
 
 It is being written in [Hy](http://hylang.org/ "Hy") (a dialect of Lisp embedded in Python) and aims to provide an expressive domain-specific language for designing and analysing control systems.
 
@@ -8,7 +8,7 @@ It uses [python-control](https://python-control.readthedocs.io/en/latest/ "pytho
 
 ## Installing
 
-Gently requires Python 3. If you are familiar with Python and know how to install a package with pip, here is how to install Gently:
+Gently requires Python 3.5 or higher. If you are familiar with Python and know how to install a package using pip, here is how to install Gently:
 
     pip install gently
 

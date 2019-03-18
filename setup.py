@@ -5,7 +5,7 @@ with open('README.md', 'r') as readme:
 
 setup(
     name='gently',
-    version='0.11',
+    version='0.12',
     description='A tool for designing and analysing control systems',
     long_description=long_description,
     author='Celaleddin Hidayetoğlu',
