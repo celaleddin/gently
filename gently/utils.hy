@@ -32,8 +32,8 @@
 (defmacro/g! macroexpander [form]
   "Make macroexpansions readable for humans"
   `(do
-     (import [gently.utils [expr->string :as ~g!expr->string]])
-     (~g!expr->string (macroexpand ~form))))
+     (import [hy.contrib.hy-repr [hy-repr :as ~g!hy-repr]])
+     (~g!hy-repr (macroexpand ~form))))
 
 (defmacro/g! local-numbers []
   "Filter `(locals)` for string keys and number values"
