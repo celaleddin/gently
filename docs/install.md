@@ -7,7 +7,7 @@ You can follow the steps below to check for requirements, create a virtual envir
 
 ### Is Python installed on your system?
 
-You can run `python --version` and `python3 --version` on your command line (terminal on GNU/Linux and macOS, cmd or Powershell on Windows) to see if you have Python installed and configured on your computer.
+You can run `python --version` and `python3 --version` on your command line (terminal on GNU/Linux and macOS, cmd or Powershell on Windows) to see if Python is installed and configured on your computer.
 
     $ python3 --version
     Python 3.5.2

@@ -5,7 +5,7 @@
 (setv *max-row-count* 3)
 
 
-(defmacro/g! plot-together [&rest forms]
+(defn plot-together [&rest things]
   "Plot things into one subplot"
 
    "Example, plot input and input response together:
@@ -13,10 +13,9 @@
      (forced-response yet-another-one input)
      input)
   "
-  `(do
-     (import [gently.plot [plotter :as ~g!plt]])
-     ~(lfor form forms `(.plot ~g!plt #* ~form))
-     (.show ~g!plt)))
+  (import [gently.plot [plotter :as plt]])
+  (lfor thing things (.plot plt #* (cut thing None 2)))
+  (.show plt))
 
 
 (defmacro/g! plot-separately [&rest forms]
@@ -47,7 +46,7 @@
                ~(if (in i together-forms)
                     `(do
                        ~(lfor form (get together-forms i)
-                              `(.plot ~g!plt #* ~form)))
-                    `(.plot ~g!plt #* ~form))
+                              `(.plot ~g!plt #* (cut ~form None 2))))
+                    `(.plot ~g!plt #* (cut ~form None 2)))
                (~g!sleep 0)))
      (.show ~g!plt)))
