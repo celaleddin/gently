@@ -1,6 +1,11 @@
 (import re)
+(import math)
 
 (import sympy)
+
+
+(setv pi math.pi)
+(setv tau (* 2 pi))
 
 
 (defclass Poly [sympy.Poly]

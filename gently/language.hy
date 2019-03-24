@@ -13,6 +13,8 @@
 (require [gently.variable [define
                            documentation]])
 (require [gently.input [step
-                        ramp]])
+                        ramp
+                        parabola
+                        sine]])
 (require [gently.response [input-response
                            step-response]])
