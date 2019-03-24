@@ -72,5 +72,5 @@
 (defmacro run-tests []
   "Run test functions registered inside the `register-tests`"
   `(for [function ~*test-functions-symbol*]
-     (do (function) (print "." :end ""))
+     (do (function) (print "." :end "" :flush True))
      (else (print "\nTests passed!"))))
