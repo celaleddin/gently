@@ -96,6 +96,7 @@
     (raise (ValueError "Sampling periods must be the same"))))
 
 (defn tf-multiply [sys-1 sys-2]
+  "Multiply transfer functions"
   (ensure-same-dt sys-1 sys-2)
   (TransferFunction (* (numerator sys-1) (numerator sys-2))
                     (* (denominator sys-1) (denominator sys-2))
@@ -161,7 +162,7 @@
   (setv arg-dict (dfor (, k #* v) system-args
                        [k (.join " " (map expr->string v))]))
   `(do
-     (import [gently.transfer_function [TransferFunction :as ~g!TF]])
+     (import [gently.transfer-function [TransferFunction :as ~g!TF]])
      (require [gently.variable [set-documentation :as ~g!set-documentation]])
      (setv ~system-name (~g!TF
                          ~(get arg-dict 'numerator)
@@ -186,7 +187,7 @@
   "Define a transfer function in a short way, like `#tf(1/s)`"
   (with-gensyms [tf expr->string s py-eval local-numbers]
     `(do
-       (import [gently.transfer_function [EvaluatedTransferFunction :as ~tf]]
+       (import [gently.transfer-function [EvaluatedTransferFunction :as ~tf]]
                [gently.utils [expr->string :as ~expr->string]]
                [builtins [eval :as ~py-eval]])
        (require [gently.utils [local-numbers :as ~local-numbers]])
@@ -207,7 +208,7 @@
         (in (first path) '(^ ^+ ^-)) (setv feedback-path (lrest path)
                                            feedback-type (first path))
         (continue)))
-  (setv import-statement `(import [gently.transfer_function :as connect])
+  (setv import-statement `(import [gently.transfer-function :as connect])
         forward-result `(connect.parallel
                           ~@(lfor systems forward-paths
                                   `(connect.series #* ~systems))))

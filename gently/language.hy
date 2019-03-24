@@ -1,4 +1,5 @@
 (import [gently.transfer_function [numerator
+(import [gently.transfer-function [numerator
                                    denominator
                                    sampling-period]])
 (import [gently.plot [plot-together]])
@@ -6,6 +7,7 @@
                           input-response]])
 
 (require [gently.transfer_function [define-transfer-function
+(require [gently.transfer-function [define-transfer-function
                                     tf
                                     substitute
                                     connect o]])

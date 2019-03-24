@@ -42,11 +42,3 @@
      (setv ~symbol (~g!make-variable ~value))
      ~(when docstring
         `(~g!set-documentation ~symbol ~docstring))))
-
-
-(defmacro/g! doc [macro-symbol]
-  "Get the documentation of macro `macro-symbol`"
-  (setv macro-name (.replace (name macro-symbol) "-" "_"))
-  `(do
-     (require [hy.core.macros [doc :as ~g!hy-doc]])
-     (~g!hy-doc ~(HySymbol macro-name))))
