@@ -6,14 +6,9 @@
 (setv *max-row-count* 3)
 
 
-(defn filter-plot-params [params]
-  "Return first two items of params"
-  (cut params None 2))
-
-
 (defn plot-together [&rest things]
   "Plot things into one subplot"
-  (lfor thing things (.plot plt #* (filter-plot-params thing)))
+  (lfor thing things (.plot plt #* thing))
   (.show plt))
 
 
@@ -26,10 +21,21 @@
   (.figure plt 1)
   (for [(, i thing) enumerated-things]
     (.subplot plt row-count column-count i)
-    (.plot plt #* (filter-plot-params thing))
+    (.plot plt #* thing)
     (sleep 0))
   (.show plt))
 
 
 (defn plot-list [thing-list]
   (plot-separately #* thing-list))
+
+
+(defmacro/g! bode-plot [system]
+  `(do
+     (.bode-plot control (.evaluate (substitute ~system)))
+     (.show control.freqplot.plt)))
+
+(defmacro/g! nyquist-plot [system]
+  `(do
+     (.nyquist-plot control (.evaluate (substitute ~system)))
+     (.show control.freqplot.plt)))
