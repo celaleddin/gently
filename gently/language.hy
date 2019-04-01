@@ -20,5 +20,9 @@
                            step-response]])
 (require [gently.plot [bode-plot
                        nyquist-plot]])
+                       nyquist-plot
+                       root-locus-plot
+                       poles
+                       zeros]])
 
 (import control)

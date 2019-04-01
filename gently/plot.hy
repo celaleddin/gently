@@ -39,3 +39,14 @@
   `(do
      (.nyquist-plot control (.evaluate (substitute ~system)))
      (.show control.freqplot.plt)))
+
+
+(defmacro/g! root-locus-plot [system]
+  `(do
+     (import [control.rlocus [pylab :as ~g!pylab]])
+     (.root-locus control (.evaluate (substitute ~system)))
+     (.show ~g!pylab)))
+
+
+(defmacro/g! poles [system] `(control.pole ~system))
+(defmacro/g! zeros [system] `(control.zero ~system))
