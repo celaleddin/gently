@@ -48,10 +48,12 @@
      (.show ~g!pylab)))
 
 
-(defmacro/g! poles [system] `(control.pole ~system))
-(defmacro/g! zeros [system] `(control.zero ~system))
 (defmacro/g! pole-zero-plot [system]
   `(do
      (import [matplotlib [pyplot :as ~g!plt]])
      (control.pzmap (.evaluate (substitute ~system)))
      (.show ~g!plt)))
+
+
+(defmacro/g! poles [system] `(control.pole (.evaluate (substitute ~system))))
+(defmacro/g! zeros [system] `(control.zero (.evaluate (substitute ~system))))
