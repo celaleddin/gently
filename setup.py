@@ -5,9 +5,10 @@ with open('README.md', 'r') as readme:
 
 setup(
     name='gently',
-    version='0.12',
+    version='0.16',
     description='A tool for designing and analysing control systems',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Celaleddin Hidayetoğlu',
     author_email='celaleddin.hidayetoglu@gmail.com',
     url='https://github.com/celaleddin/gently/',
