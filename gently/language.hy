@@ -19,9 +19,9 @@
 (require [gently.response [input-response
                            step-response]])
 (require [gently.plot [bode-plot
-                       nyquist-plot]])
                        nyquist-plot
                        root-locus-plot
+                       pole-zero-plot
                        poles
                        zeros]])
 

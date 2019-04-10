@@ -3,7 +3,7 @@
 
 (defmacro/g! input-response [input system]
   `(->
-     (.forced-response ~control (.evaluate (substitute ~system)) #* ~input)
+     (.forced-response control (.evaluate (substitute ~system)) #* ~input)
      (cut None 2)))
 
 
