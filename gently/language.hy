@@ -3,7 +3,8 @@
                                    sampling-period]])
 (import [gently.plot [plot-together
                       plot-separately
-                      plot-list]])
+                      plot-list
+                      together]])
 (import [gently.input [define-input-signal]])
 
 (require [gently.transfer-function [define-transfer-function

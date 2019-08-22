@@ -21,9 +21,23 @@
   (.figure plt 1)
   (for [(, i thing) enumerated-things]
     (.subplot plt row-count column-count i)
-    (.plot plt #* thing)
+    (plot-separately/together #* thing)
     (sleep 0))
   (.show plt))
+
+
+(defn together [&rest things]
+  (setv result [(first (first things))])
+  (for [thing things]
+    (.append result (second thing)))
+  (return result))
+
+
+(defn plot-separately/together [&rest things]
+  (setv time (first things)
+        data (rest things))
+  (for [datum data]
+    (.plot plt time datum)))
 
 
 (defn plot-list [thing-list]

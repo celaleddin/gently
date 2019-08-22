@@ -29,15 +29,6 @@
 #parabola()  ;; #parabola(start-time end-time)
 #sine()      ;; #sine(start-time end-time)
 
-;;;; A function for defining custom input signals based on time
-(define-input-signal
-  :duration 10
-  :signal-conditioner (fn [t]
-                        (if (< t 3) 1
-                            (< t 6) 2
-                            (< t 9) 3
-                            0)))
-
 ;;;; Poles and zeros of a transfer function
 (poles substituted-system)
 (zeros substituted-system)
@@ -60,6 +51,14 @@
 (plot-separately
   (input-response #sine() substituted-system)
   (input-response #ramp() substituted-system))
+
+(plot-separately
+  (together
+    (input-response #sine() substituted-system)
+    #sine())
+  (together
+    (input-response #ramp() substituted-system)
+    #ramp()))
 
 ;;;; Block diagram representations and system interconnections
 (o
